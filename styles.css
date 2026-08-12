@@ -13,6 +13,8 @@ button { font:inherit; }
 .getting-started{margin-top:31px}.section-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}.section-heading h2{margin:0;font-size:17px;letter-spacing:-1px}.section-heading span{color:var(--blue-500);font-family:Nunito,sans-serif;font-size:11px;font-weight:900}.step-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.step-card{min-height:159px;padding:17px 15px;border:1px solid var(--line);border-radius:21px;background:#fff}.step-icon{display:grid;width:36px;height:36px;place-items:center;border-radius:13px;font-size:21px;font-weight:900}.step-icon.blue{background:var(--blue-100);color:var(--blue-700)}.step-icon.mint{background:var(--mint);color:#15866d}.step-card h3{margin:14px 0 5px;font-size:15px}.step-card p{margin:0;color:var(--muted);font-size:11px;line-height:1.6}
 .bottom-nav{position:fixed;z-index:10;right:0;bottom:0;left:0;display:flex;max-width:480px;height:74px;margin:auto;padding:8px 13px env(safe-area-inset-bottom);border-top:1px solid var(--line);background:rgba(255,255,255,.96);box-shadow:0 -5px 20px rgba(39,87,158,.06);backdrop-filter:blur(10px)}.nav-item{display:flex;flex:1;flex-direction:column;align-items:center;gap:2px;border:0;border-radius:13px;background:transparent;color:#91a5c3;cursor:pointer;font-size:11px;font-weight:700;transition:color .2s,background .2s}.nav-item>span:first-child{font-size:23px;line-height:27px}.nav-item:hover,.nav-item:focus-visible{background:var(--blue-50);outline:none}.nav-item.active{color:var(--blue-700)}
 .toast{position:fixed;z-index:20;bottom:90px;left:50%;width:max-content;max-width:calc(100% - 44px);padding:10px 15px;border-radius:13px;background:var(--text);color:#fff;font-size:12px;opacity:0;pointer-events:none;transform:translate(-50%,12px);transition:opacity .2s,transform .2s}.toast.visible{opacity:1;transform:translate(-50%,0)}
+/* 모든 메뉴에 같은 위치로 노출되는 공통 리모컨입니다. 모바일에서는 접어서 콘텐츠를 넓게 볼 수 있습니다. */
+.remote-control{position:fixed;z-index:18;right:max(13px,calc((100vw - 480px) / 2 + 13px));bottom:88px;width:166px;padding:7px;border:1px solid #bfd9f4;border-radius:22px;background:rgba(255,255,255,.94);box-shadow:0 14px 30px rgba(29,78,135,.18);backdrop-filter:blur(12px);transition:width .2s ease}.remote-toggle{display:flex;align-items:center;gap:5px;width:100%;min-height:28px;padding:0 7px;border:0;border-radius:12px;background:#eaf4ff;color:var(--blue-900);cursor:pointer;font-size:10px;font-weight:900;text-align:left}.remote-toggle span{font-size:16px}.remote-panel{display:grid;gap:7px;margin-top:7px}.remote-display{display:grid;grid-template-columns:1fr auto;align-items:center;padding:8px 10px;border-radius:15px;background:#143d78;color:#fff}.remote-display span{font-family:Nunito,sans-serif;font-size:9px;font-weight:900;letter-spacing:.8px;opacity:.72}.remote-display strong{font-family:Nunito,sans-serif;font-size:25px;line-height:1}.remote-display small{grid-column:1 / -1;margin-top:2px;color:#bfe5ff;font-size:9px}.remote-buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}.remote-buttons button{min-height:31px;border:0;border-radius:11px;background:#f0f7ff;color:var(--blue-900);cursor:pointer;font-size:15px;font-weight:900}.remote-buttons button:hover,.remote-buttons button:focus-visible{background:var(--blue-700);color:#fff;outline:none}.remote-control.is-off .remote-display{background:#71829a}.remote-control.collapsed{width:102px}.remote-control.collapsed .remote-panel{display:none}
 @media (min-width:481px){body{padding:24px 0}.app-shell{min-height:calc(100vh - 48px);border-radius:30px;box-shadow:0 16px 50px rgba(53,101,170,.18)}.bottom-nav{bottom:24px;border-radius:0 0 30px 30px}}
 
 /* PHASE 2: 정상 상태는 Blue, 점검·오류 상태만 Red 계열로 보여줍니다. */
@@ -82,7 +84,7 @@ button { font:inherit; }
   .content{padding:30px 0 24px}.step-grid{grid-template-columns:repeat(4,1fr)}
   .bottom-nav{position:absolute;top:98px;bottom:auto;left:22px;right:auto;display:grid;width:66px;height:auto;margin:0;padding:7px;border:1px solid var(--line);border-radius:20px;background:#fff;box-shadow:0 10px 24px rgba(44,96,165,.1)}
   .nav-item{min-height:60px;font-size:10px}.nav-item>span:first-child{font-size:21px}
-  .toast{bottom:30px}.auth-backdrop{align-items:center}.auth-sheet{border-radius:24px}
+  .toast{bottom:30px}.remote-control{right:34px;bottom:32px}.auth-backdrop{align-items:center}.auth-sheet{border-radius:24px}
 }
 
 /* DESKTOP: 넓은 화면에서는 핵심 상태를 한눈에 보는 2열 대시보드로 확장합니다. */
@@ -108,7 +110,7 @@ button { font:inherit; }
   .step-grid{grid-template-columns:repeat(4,1fr)}.step-card{min-height:142px}
   .bottom-nav{position:absolute;top:112px;bottom:auto;left:28px;right:auto;display:grid;width:72px;height:auto;margin:0;padding:8px;border:1px solid var(--line);border-radius:22px;background:#fff;box-shadow:0 10px 26px rgba(44,96,165,.1)}
   .nav-item{min-height:64px;gap:1px;border-radius:15px}.nav-item>span:first-child{font-size:22px}
-  .toast{bottom:34px}
+  .toast{bottom:34px}.remote-control{right:38px;bottom:36px;width:180px}
   .auth-sheet{max-width:520px;padding:32px 34px 36px;border-radius:26px}
   .auth-backdrop{align-items:center}
 }

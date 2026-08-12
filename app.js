@@ -156,9 +156,35 @@ const airconStates = {
   off: { danger:true, badge:'연결 알림 · 전원', power:'OFF', mode:'대기', temperature:'--', fan:'정지', runtime:'2시간 10분', filter:'전원 켜짐 후 확인', message:'에어컨 전원이 꺼져 있어요. 필요할 때만 켜는 습관도 멋져요!', toast:'전원 OFF 상태를 시뮬레이션하고 있어요.' },
 };
 let currentAirconState = 'normal';
+let remoteTargetTemperature = 24;
+let remoteFanMode = '자동';
 let missionStatus = 'ready';
 let missionMinutes = 0;
 const missionTotalMinutes = 120;
+
+// 어느 메뉴에서도 에어컨을 조작할 수 있도록 앱 셸에 공통 리모컨을 한 번만 추가합니다.
+const remoteControl = document.createElement('aside');
+remoteControl.className = 'remote-control';
+remoteControl.setAttribute('aria-label', '에어컨 공통 리모컨');
+remoteControl.innerHTML = `
+  <button class="remote-toggle" type="button" aria-expanded="true"><span aria-hidden="true">⌁</span> 리모컨</button>
+  <div class="remote-panel">
+    <div class="remote-display"><span>COOL</span><strong id="remote-temperature">24°</strong><small id="remote-fan">자동</small></div>
+    <div class="remote-buttons">
+      <button type="button" data-remote-action="power" aria-label="전원 켜기 또는 끄기">⏻</button>
+      <button type="button" data-remote-action="temperature-down" aria-label="온도 낮추기">−</button>
+      <button type="button" data-remote-action="temperature-up" aria-label="온도 높이기">＋</button>
+      <button type="button" data-remote-action="fan" aria-label="바람 세기 변경">♧</button>
+    </div>
+  </div>`;
+document.querySelector('.app-shell').append(remoteControl);
+const remoteTemperature = remoteControl.querySelector('#remote-temperature');
+const remoteFan = remoteControl.querySelector('#remote-fan');
+
+remoteControl.querySelector('.remote-toggle').addEventListener('click', (event) => {
+  const isCollapsed = remoteControl.classList.toggle('collapsed');
+  event.currentTarget.setAttribute('aria-expanded', String(!isCollapsed));
+});
 // PHASE 4에서는 Supabase 연결 전까지 브라우저 localStorage를 임시 지갑으로 사용합니다.
 const walletStorageKeys = { balance:'greenon-point-balance', transactions:'greenon-point-transactions', rewardedDay:'greenon-mission-rewarded-day', orders:'greenon-reward-orders', profile:'greenon-demo-profile', session:'greenon-demo-session' };
 let selectedTransactionType = 'earn';
@@ -675,10 +701,13 @@ function renderAirconState(stateName, silent = false) {
   powerState.textContent = state.power;
   statusCopy.textContent = state.message;
   modeValue.textContent = state.mode;
-  temperatureValue.textContent = state.temperature;
-  fanValue.textContent = state.fan;
+  temperatureValue.textContent = stateName === 'normal' ? remoteTargetTemperature : state.temperature;
+  fanValue.textContent = stateName === 'normal' ? remoteFanMode : state.fan;
   runtimeValue.textContent = state.runtime;
   filterValue.textContent = state.filter;
+  remoteTemperature.textContent = stateName === 'off' ? '--°' : `${stateName === 'normal' ? remoteTargetTemperature : state.temperature}°`;
+  remoteFan.textContent = stateName === 'normal' ? remoteFanMode : state.power;
+  remoteControl.classList.toggle('is-off', stateName === 'off');
   airconButtons.forEach((button) => button.classList.toggle('active', button.dataset.airconState === stateName));
   // 진행 중에 조건이 바뀌면 즉시 Red 경고를 보여 주고, 다음 시간 진행에서 실패 처리합니다.
   if (missionStatus === 'running' && stateName !== 'normal') {
@@ -691,13 +720,29 @@ function renderAirconState(stateName, silent = false) {
 
 airconButtons.forEach((button) => button.addEventListener('click', () => renderAirconState(button.dataset.airconState)));
 
+// 리모컨 입력은 현재 보이는 카드와 같은 상태 데이터를 바꾸므로 메뉴를 이동해도 조작 결과가 유지됩니다.
+remoteControl.querySelectorAll('[data-remote-action]').forEach((button) => button.addEventListener('click', () => {
+  const action = button.dataset.remoteAction;
+  if (action === 'power') {
+    renderAirconState(currentAirconState === 'off' ? 'normal' : 'off');
+    return;
+  }
+  if (currentAirconState !== 'normal') renderAirconState('normal', true);
+  if (action === 'temperature-down') remoteTargetTemperature = Math.max(18, remoteTargetTemperature - 1);
+  if (action === 'temperature-up') remoteTargetTemperature = Math.min(30, remoteTargetTemperature + 1);
+  if (action === 'fan') remoteFanMode = remoteFanMode === '자동' ? '강풍' : remoteFanMode === '강풍' ? '약풍' : '자동';
+  renderAirconState('normal', true);
+  showToast(action === 'fan' ? `바람 세기를 ${remoteFanMode}(으)로 바꿨어요.` : `희망 온도를 ${remoteTargetTemperature}°C로 바꿨어요.`);
+}));
+
 // 현재 가상 에어컨 상태가 미션의 정상 냉방 조건을 만족하는지 확인합니다.
 function hasMissionCondition() {
-  return currentAirconState === 'normal';
+  return currentAirconState === 'normal' && remoteTargetTemperature === 24;
 }
 
 function getMissionFailureMessage() {
   const reasons = { filter:'필터 점검이 필요한 상태입니다.', sensor:'온도 센서 오류가 감지되었습니다.', off:'에어컨 전원이 꺼져 있습니다.' };
+  if (currentAirconState === 'normal' && remoteTargetTemperature !== 24) return '미션 실패: 리모컨의 희망 온도를 24°C로 맞춰 주세요.';
   return `미션 실패: ${reasons[currentAirconState] || '냉방 조건을 확인해 주세요.'}`;
 }
 
