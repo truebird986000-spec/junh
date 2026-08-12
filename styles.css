@@ -73,3 +73,36 @@ button { font:inherit; }
 /* PHASE 6: 체험용 인증과 MY 페이지. 입력 오류에만 Red를 사용합니다. */
 .my-page{margin-top:31px}.profile-summary{display:flex;align-items:center;gap:10px;padding:15px;border:1px solid var(--line);border-radius:20px;background:#fff}.profile-avatar{display:grid;width:40px;height:40px;flex:0 0 auto;place-items:center;border-radius:15px;background:var(--blue-700);color:#fff;font-family:Nunito,sans-serif;font-size:17px;font-weight:900}.profile-summary p{margin:0 0 2px;color:var(--muted);font-size:10px}.profile-summary h3{margin:0;font-size:12px;letter-spacing:-.5px}.profile-login-button{margin-left:auto;min-height:29px;padding:0 9px;border:0;border-radius:9px;background:var(--blue-50);color:var(--blue-700);cursor:pointer;font-size:10px;font-weight:800}.green-level-card{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding:17px 16px;border-radius:20px;background:linear-gradient(135deg,#e0f8ef,#e9f5ff)}.green-level-card p{margin:0 0 3px;color:#267a68;font-family:Nunito,sans-serif;font-size:9px;font-weight:900;letter-spacing:.6px}.green-level-card h3{margin:0;color:#176d5c;font-family:Nunito,sans-serif;font-size:24px;letter-spacing:-1px}.green-level-card div>span{display:block;margin-top:3px;color:#508679;font-size:10px}.level-orbit{display:grid!important;width:55px;height:55px;place-items:center;border:7px solid rgba(255,255,255,.74);border-radius:50%;background:#aeead3;color:#16725e!important;font-size:25px}.green-report{margin-top:12px;padding:16px;border:1px solid var(--line);border-radius:20px;background:#fff}.report-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:11px}.report-grid div{display:grid;gap:3px;padding:10px 4px;border-radius:12px;background:var(--blue-50);text-align:center}.report-grid strong{color:var(--blue-700);font-family:Nunito,sans-serif;font-size:17px}.report-grid span{color:var(--muted);font-size:9px}.green-report>p{margin:11px 0 0;color:var(--muted);font-size:10px;line-height:1.5}.logout-button{width:100%;min-height:39px;margin-top:11px;border:1px solid #cbdcf3;border-radius:13px;background:#fff;color:#6680a4;cursor:pointer;font-size:11px;font-weight:800}.logout-button:hover,.logout-button:focus-visible{background:var(--blue-50);outline:none}
 .auth-backdrop{position:fixed;z-index:30;inset:0;display:grid;align-items:end;background:rgba(11,40,86,.42);backdrop-filter:blur(3px)}.auth-backdrop[hidden]{display:none}.auth-sheet{position:relative;max-width:480px;width:100%;margin:0 auto;padding:25px 22px calc(25px + env(safe-area-inset-bottom));border-radius:28px 28px 0 0;background:#fff;box-shadow:0 -12px 38px rgba(5,36,86,.22)}.auth-kicker{margin:0 0 7px;color:var(--blue-500);font-family:Nunito,sans-serif;font-size:10px;font-weight:900;letter-spacing:.8px}.auth-sheet h2{margin:0;font-size:25px;line-height:1.36;letter-spacing:-1.3px}.auth-tabs{display:flex;gap:5px;margin:18px 0 14px;padding:4px;border-radius:12px;background:var(--blue-50)}.auth-tab{flex:1;min-height:34px;border:0;border-radius:9px;background:transparent;color:var(--muted);cursor:pointer;font-size:11px;font-weight:800}.auth-tab.active{background:#fff;color:var(--blue-700);box-shadow:0 2px 6px rgba(42,89,161,.1)}.auth-field{display:grid;gap:6px;margin-top:11px;color:var(--text);font-size:10px;font-weight:800}.auth-field input{width:100%;height:42px;padding:0 12px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--text);font:inherit;font-size:12px}.auth-field input:focus{border-color:var(--blue-700);outline:2px solid #dcecff}.auth-message{margin:10px 0 0;padding:8px 10px;border-radius:10px;background:#fff0f1;color:#c33046;font-size:10px;font-weight:700}.auth-caption{margin:10px 0 0;color:var(--muted);font-size:10px;line-height:1.45}.auth-submit{width:100%;height:43px;margin-top:14px;border:0;border-radius:13px;background:var(--blue-700);color:#fff;cursor:pointer;font-size:12px;font-weight:800}.auth-submit:hover,.auth-submit:focus-visible{background:var(--blue-900);outline:none}
+
+/* DESKTOP: 넓은 화면에서는 핵심 상태를 한눈에 보는 2열 대시보드로 확장합니다. */
+@media (min-width:900px){
+  body{padding:32px;background:linear-gradient(135deg,#edf6ff 0%,#f8fbff 48%,#e7f3ff 100%)}
+  .app-shell{max-width:1240px;min-height:calc(100vh - 64px);padding:0 34px 40px 128px;border-radius:32px;overflow:visible;box-shadow:0 24px 70px rgba(34,91,170,.16)}
+  .topbar{min-height:82px;padding:24px 0 16px;border-bottom:1px solid var(--line)}
+  .brand{font-size:21px}.brand-mark{width:37px;height:37px;border-radius:13px;font-size:22px}
+  .auth-button{min-height:40px;padding:0 15px;font-size:12px}.icon-button{width:42px;height:42px}
+  .content{display:grid;grid-template-columns:minmax(0,1.18fr) minmax(330px,.82fr);grid-template-areas:"intro intro" "weather aircon" "simulation simulation" "mission wallet" "shop my" "start start";gap:22px;padding:38px 0 28px}
+  .eyebrow{grid-area:intro;margin:0 0 -29px;font-size:12px}
+  h1{grid-area:intro;align-self:end;max-width:650px;font-size:44px;line-height:1.28}
+  .intro{grid-area:intro;align-self:end;justify-self:end;max-width:355px;margin:0 0 4px;font-size:14px}
+  .weather-card{grid-area:weather;margin:0;padding:22px}
+  .aircon-card{grid-area:aircon;margin:0}
+  .simulation-panel{grid-area:simulation;margin:0}.simulation-options{grid-template-columns:repeat(4,1fr)}
+  .mission-card{grid-area:mission;margin:0;min-height:344px}
+  .wallet-card{grid-area:wallet;margin:0;min-height:344px}
+  .reward-shop{grid-area:shop;margin:0}
+  .my-page{grid-area:my;margin:0}
+  .getting-started{grid-area:start;margin-top:8px}
+  .reward-grid{grid-template-columns:repeat(3,1fr)}.reward-product{min-height:184px}
+  .step-grid{grid-template-columns:repeat(4,1fr)}.step-card{min-height:142px}
+  .bottom-nav{position:absolute;top:112px;bottom:auto;left:28px;right:auto;display:grid;width:72px;height:auto;margin:0;padding:8px;border:1px solid var(--line);border-radius:22px;background:#fff;box-shadow:0 10px 26px rgba(44,96,165,.1)}
+  .nav-item{min-height:64px;gap:1px;border-radius:15px}.nav-item>span:first-child{font-size:22px}
+  .toast{bottom:34px}
+  .auth-sheet{max-width:520px;padding:32px 34px 36px;border-radius:26px}
+  .auth-backdrop{align-items:center}
+}
+
+@media (min-width:1200px){
+  .content{grid-template-columns:minmax(0,1.25fr) minmax(370px,.75fr);gap:26px}
+  .simulation-panel{padding:20px 22px}
+}
