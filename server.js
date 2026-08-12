@@ -5,8 +5,9 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const port = Number(process.env.PORT) || 3000;
-const publicFiles = { '/': 'index.html', '/index.html': 'index.html', '/styles.css': 'styles.css', '/app.js': 'app.js' };
-const contentTypes = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'application/javascript; charset=utf-8' };
+const publicFiles = { '/': 'index.html', '/index.html': 'index.html', '/styles.css': 'styles.css', '/app.js': 'app.js', '/assets/greenon-mascot.png':'assets/greenon-mascot.png' };
+const rewardFiles = new Set(['eco-coffee-coupon.png', 'eco-snack-set.png', 'reusable-eco-bag.png', 'mini-plant-kit.png', 'filter-care-kit.png', 'carrier-care-package.png']);
+const contentTypes = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'application/javascript; charset=utf-8', '.png':'image/png' };
 
 const server = http.createServer((request, response) => {
   // Publishable key만 브라우저에 전달합니다. service_role/secret key는 절대 이 경로에 포함하지 않습니다.
@@ -22,7 +23,8 @@ const server = http.createServer((request, response) => {
   }
 
   // 주소에 등록된 파일만 반환해 의도하지 않은 파일 경로 접근을 막습니다.
-  const fileName = publicFiles[request.url];
+  const rewardFile = request.url?.startsWith('/reward/') ? request.url.slice('/reward/'.length) : '';
+  const fileName = publicFiles[request.url] || (rewardFiles.has(rewardFile) ? path.join('reward', rewardFile) : '');
   if (!fileName) {
     response.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
     response.end('페이지를 찾을 수 없습니다.');

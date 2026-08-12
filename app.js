@@ -2,6 +2,7 @@
 // 실제 미션·포인트·회원 데이터는 이후 단계에서 별도 모듈로 추가합니다.
 const todayLabel = document.querySelector('#today-label');
 const navItems = document.querySelectorAll('.nav-item');
+let screenGroups;
 const toast = document.querySelector('#toast');
 const noticeButton = document.querySelector('[data-action="notice"]');
 const airconCard = document.querySelector('#aircon-card');
@@ -75,6 +76,29 @@ const weatherRefresh = document.querySelector('#weather-refresh');
 const weatherMissionCondition = document.querySelector('#weather-mission-condition');
 let toastTimer;
 
+// 별도 이미지 파일을 사용하는 캐릭터 카드는 홈 화면에만 표시합니다.
+const characterCard = document.createElement('aside');
+characterCard.className = 'character-card';
+characterCard.dataset.screen = 'home';
+characterCard.setAttribute('aria-label', 'GreenON 캐릭터');
+const characterImage = document.createElement('img');
+characterImage.src = '/assets/greenon-mascot.png';
+characterImage.alt = '새싹을 든 GreenON 에어컨 로봇 캐릭터';
+const characterCopy = document.createElement('span');
+characterCopy.innerHTML = 'GreenON 친구가<br />오늘의 쿨링을 함께해요';
+characterCard.append(characterImage, characterCopy);
+document.querySelector('.weather-card')?.before(characterCard);
+
+// 기존 마크업을 보존하면서 메뉴별 콘텐츠를 실제 앱 화면 단위로 묶습니다.
+const screenSelectors = {
+  홈:['#today-label', 'h1', '.intro', '.character-card', '.weather-card', '#aircon-card', '.simulation-panel', '.getting-started'],
+  미션:['#mission-card'],
+  리워드:['.wallet-card', '#reward-shop'],
+  마이:['#my-page'],
+};
+screenGroups = Object.fromEntries(Object.entries(screenSelectors).map(([name, selectors]) => [name, selectors.map((selector) => document.querySelector(selector)).filter(Boolean)]));
+Object.entries(screenGroups).forEach(([name, elements]) => elements.forEach((element) => element.dataset.screen = name === '홈' ? 'home' : name === '미션' ? 'mission' : name === '리워드' ? 'reward' : 'my'));
+
 // 사용자가 읽기 편한 한국어 날짜를 홈 화면 상단에 표시합니다.
 const today = new Intl.DateTimeFormat('ko-KR', { month:'long', day:'numeric', weekday:'short' }).format(new Date());
 todayLabel.textContent = `${today} · GREEN COOLING LIFE`;
@@ -87,28 +111,40 @@ function showToast(message) {
   toastTimer = setTimeout(() => toast.classList.remove('visible'), 2200);
 }
 
+// 한 화면을 길게 스크롤하는 대신, 하단 메뉴마다 독립적인 앱 화면처럼 전환합니다.
+function showScreen(viewName) {
+  Object.entries(screenGroups).forEach(([screenName, elements]) => {
+    elements.forEach((element) => {
+      const isCurrent = screenName === viewName;
+      element.hidden = !isCurrent;
+      element.classList.toggle('screen-active', isCurrent);
+    });
+  });
+  navItems.forEach((navItem) => {
+    const isCurrent = navItem.dataset.view === viewName;
+    navItem.classList.toggle('active', isCurrent);
+    navItem.toggleAttribute('aria-current', isCurrent);
+  });
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
 navItems.forEach((item) => item.addEventListener('click', () => {
   navItems.forEach((navItem) => { navItem.classList.remove('active'); navItem.removeAttribute('aria-current'); });
   item.classList.add('active');
   item.setAttribute('aria-current', 'page');
   const viewName = item.dataset.view;
-  if (viewName === '미션') {
-    document.querySelector('#mission-card').scrollIntoView({ behavior:'smooth', block:'start' });
-    showToast('오늘의 GREEN MISSION으로 이동했어요.');
-    return;
-  }
-  if (viewName === '리워드') {
-    document.querySelector('#reward-shop').scrollIntoView({ behavior:'smooth', block:'start' });
-    showToast('GREEN REWARD SHOP으로 이동했어요.');
-    return;
-  }
-  if (viewName === '마이') {
-    document.querySelector('#my-page').scrollIntoView({ behavior:'smooth', block:'start' });
-    showToast('MY GreenON으로 이동했어요.');
-    return;
-  }
-  showToast(viewName === '홈' ? 'GreenON 홈으로 돌아왔어요.' : `${viewName} 화면은 다음 개발 단계에서 준비돼요.`);
+  showScreen(viewName);
+  showToast(`${viewName} 화면으로 이동했어요.`);
 }));
+
+// MDN의 PointerEvent 패턴을 응용해 마우스가 있는 PC에서만 은은한 빛과 캐릭터 움직임을 더합니다.
+if (window.matchMedia('(hover: hover) and (pointer: fine)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  document.querySelector('.app-shell').addEventListener('pointermove', (event) => {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    event.currentTarget.style.setProperty('--pointer-x', `${((event.clientX - bounds.left) / bounds.width) * 100}%`);
+    event.currentTarget.style.setProperty('--pointer-y', `${((event.clientY - bounds.top) / bounds.height) * 100}%`);
+  });
+}
 
 noticeButton.addEventListener('click', () => showToast('새로운 알림이 없어요. 오늘도 시원한 하루 되세요!'));
 
@@ -136,6 +172,13 @@ let rewards = [
   { id:'filter-care', category:'CARRIER', icon:'❄', title:'필터 케어 알림 서비스', description:'쾌적한 냉방을 위한 필터 관리 리마인더예요.', price:200 },
   { id:'carrier-care', category:'CARRIER', icon:'✦', title:'Carrier 케어 패키지', description:'그린 쿨링을 위한 캐리어 케어 혜택이에요.', price:500 },
 ];
+
+const rewardImageBySlug = {
+  'coffee-coupon':'/reward/eco-coffee-coupon.png', 'snack-set':'/reward/eco-snack-set.png',
+  'eco-bag':'/reward/reusable-eco-bag.png', 'plant-kit':'/reward/mini-plant-kit.png',
+  'filter-care':'/reward/filter-care-kit.png', 'carrier-care':'/reward/carrier-care-package.png',
+};
+const getRewardImage = (slug) => rewardImageBySlug[slug] || '/reward/carrier-care-package.png';
 
 function loadTemporaryWallet() {
   try {
@@ -252,7 +295,7 @@ function renderMyPage() {
 // 인증이 끝난 직후 MY 화면으로 이동해 로그인 성공 상태를 분명하게 보여 줍니다.
 function revealLoggedInMyPage() {
   renderMyPage();
-  document.querySelector('#my-page').scrollIntoView({ behavior:'smooth', block:'start' });
+  showScreen('마이');
 }
 
 function renderAuthMode() {
@@ -366,7 +409,7 @@ async function loadSupabaseData() {
   pointBalance = pointTransactions.reduce((total, item) => total + (item.type === 'earn' ? item.amount : -item.amount), 0);
   if (rewardResult.data?.length) {
     rewards = rewardResult.data.map((item) => ({
-      id:item.id, category:item.category, title:item.title, description:item.description, price:item.point_price,
+      id:item.id, category:item.category, title:item.title, description:item.description, price:item.point_price, image:getRewardImage(item.slug),
       icon:item.category === 'FOOD' ? '☕' : item.category === 'LIFE' ? '🪴' : '❄',
     }));
   }
@@ -546,7 +589,7 @@ function renderRewardShop() {
   rewards.filter((reward) => selectedRewardCategory === 'ALL' || reward.category === selectedRewardCategory).forEach((reward) => {
     const card = document.createElement('article');
     card.className = 'reward-product';
-    const icon = document.createElement('span'); icon.className = 'reward-product-icon'; icon.textContent = reward.icon;
+    const icon = document.createElement('img'); icon.className = 'reward-product-icon'; icon.src = reward.image || getRewardImage(reward.id); icon.alt = `${reward.title} 상품 이미지`;
     const category = document.createElement('p'); category.className = 'reward-product-category'; category.textContent = reward.category;
     const title = document.createElement('h3'); title.textContent = reward.title;
     const price = document.createElement('p'); price.className = 'reward-product-price'; price.textContent = `${formatPoint(reward.price)}P`;
@@ -562,7 +605,11 @@ function openRewardDetail(rewardId) {
   if (!reward) return;
   selectedRewardId = reward.id;
   const shortage = reward.price - pointBalance;
-  rewardDetailIcon.textContent = reward.icon;
+  rewardDetailIcon.replaceChildren();
+  const detailImage = document.createElement('img');
+  detailImage.src = reward.image || getRewardImage(reward.id);
+  detailImage.alt = `${reward.title} 상품 이미지`;
+  rewardDetailIcon.append(detailImage);
   rewardDetailCategory.textContent = reward.category;
   rewardDetailTitle.textContent = reward.title;
   rewardDetailDescription.textContent = reward.description;
@@ -754,7 +801,7 @@ rewardDetailClose.addEventListener('click', () => { rewardDetail.hidden = true; 
 
 authButton.addEventListener('click', () => {
   if (currentUser) {
-    document.querySelector('#my-page').scrollIntoView({ behavior:'smooth', block:'start' });
+    showScreen('마이');
     return;
   }
   openAuth('login');
@@ -887,4 +934,5 @@ renderRewardShop();
 renderPurchaseHistory();
 renderMyPage();
 renderWeather(weatherSamplesData[selectedWeather]);
+showScreen('홈');
 void initializeSupabase();
