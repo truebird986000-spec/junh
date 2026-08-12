@@ -444,9 +444,14 @@ async function initializeSupabase() {
       renderPurchaseHistory();
       renderMyPage();
     }
-    supabaseClient.auth.onAuthStateChange(async (_event, session) => {
+    // 인증 이벤트 안에서 데이터를 기다리면 화면 갱신이 늦어질 수 있습니다.
+    // 먼저 로그인 표시를 바꾸고, 사용자 데이터는 뒤에서 안전하게 불러옵니다.
+    supabaseClient.auth.onAuthStateChange((_event, session) => {
       currentUser = session?.user ? toCurrentUser(session.user) : null;
-      if (currentUser) await loadSupabaseData();
+      if (currentUser) {
+        renderMyPage();
+        void loadSupabaseData();
+      }
       else renderMyPage();
     });
   } catch (error) {
@@ -765,8 +770,9 @@ authForm.addEventListener('submit', async (event) => {
     showAuthError('올바른 이메일 주소를 입력해 주세요.');
     return;
   }
-  if (password.length < 4) {
-    showAuthError('비밀번호는 4자 이상 입력해 주세요.');
+  // Supabase Email 인증의 최소 비밀번호 길이는 6자이므로 화면 안내도 동일하게 맞춥니다.
+  if (password.length < 6) {
+    showAuthError('비밀번호는 6자 이상 입력해 주세요.');
     return;
   }
   if (usingSupabase) {
@@ -792,7 +798,9 @@ authForm.addEventListener('submit', async (event) => {
       }
       currentUser = toCurrentUser(data.user);
       authBackdrop.hidden = true;
-      await loadSupabaseData();
+      // 네트워크 응답을 기다리지 않고 즉시 로그인 상태를 화면에 보여 줍니다.
+      renderMyPage();
+      void loadSupabaseData();
       showToast(`${name}님, GreenON 회원가입을 환영해요!`);
       return;
     }
@@ -804,7 +812,9 @@ authForm.addEventListener('submit', async (event) => {
     currentUser = toCurrentUser(data.user);
     authBackdrop.hidden = true;
     authForm.reset();
-    await loadSupabaseData();
+    // 로그인 성공을 즉시 보이게 한 뒤, 지갑·미션 데이터는 비동기로 갱신합니다.
+    renderMyPage();
+    void loadSupabaseData();
     showToast(`${currentUser.name}님, 다시 만나서 반가워요!`);
     return;
   }
