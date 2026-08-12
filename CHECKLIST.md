@@ -87,7 +87,7 @@
 * [x] aircon\_status 테이블
 * [x] GREEN LEVEL 데이터
 * [x] RLS 설정
-* \[ ] 사용자별 데이터 접근 테스트
+* [x] 사용자별 데이터 접근 테스트
 
 
 
