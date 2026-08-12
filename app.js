@@ -249,6 +249,12 @@ function renderMyPage() {
   reportMessage.textContent = `${currentUser.name}님의 그린 쿨링 실천이 지구를 더 시원하게 만들고 있어요.`;
 }
 
+// 인증이 끝난 직후 MY 화면으로 이동해 로그인 성공 상태를 분명하게 보여 줍니다.
+function revealLoggedInMyPage() {
+  renderMyPage();
+  document.querySelector('#my-page').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
 function renderAuthMode() {
   const isSignup = authMode === 'signup';
   authTabs.forEach((tab) => {
@@ -799,7 +805,7 @@ authForm.addEventListener('submit', async (event) => {
       currentUser = toCurrentUser(data.user);
       authBackdrop.hidden = true;
       // 네트워크 응답을 기다리지 않고 즉시 로그인 상태를 화면에 보여 줍니다.
-      renderMyPage();
+      revealLoggedInMyPage();
       void loadSupabaseData();
       showToast(`${name}님, GreenON 회원가입을 환영해요!`);
       return;
@@ -813,7 +819,7 @@ authForm.addEventListener('submit', async (event) => {
     authBackdrop.hidden = true;
     authForm.reset();
     // 로그인 성공을 즉시 보이게 한 뒤, 지갑·미션 데이터는 비동기로 갱신합니다.
-    renderMyPage();
+    revealLoggedInMyPage();
     void loadSupabaseData();
     showToast(`${currentUser.name}님, 다시 만나서 반가워요!`);
     return;
