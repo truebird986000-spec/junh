@@ -5,7 +5,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const port = Number(process.env.PORT) || 3000;
-const publicFiles = { '/': 'index.html', '/index.html': 'index.html', '/styles.css': 'styles.css', '/app.js': 'app.js', '/assets/greenon-mascot.png':'assets/greenon-mascot.png' };
+const publicFiles = { '/': 'index.html', '/index.html': 'index.html', '/styles.css': 'styles.css', '/app.js': 'app.js', '/assets/greenon-mascot.png':'assets/greenon-mascot.png', '/assets/greenon-mascot-v2.png':'assets/greenon-mascot-v2.png' };
 const rewardFiles = new Set(['eco-coffee-coupon.png', 'eco-snack-set.png', 'reusable-eco-bag.png', 'mini-plant-kit.png', 'filter-care-kit.png', 'carrier-care-package.png']);
 const contentTypes = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'application/javascript; charset=utf-8', '.png':'image/png' };
 

@@ -82,7 +82,7 @@ characterCard.className = 'character-card';
 characterCard.dataset.screen = 'home';
 characterCard.setAttribute('aria-label', 'GreenON 캐릭터');
 const characterImage = document.createElement('img');
-characterImage.src = '/assets/greenon-mascot.png';
+characterImage.src = '/assets/greenon-mascot-v2.png';
 characterImage.alt = '새싹을 든 GreenON 에어컨 로봇 캐릭터';
 const characterCopy = document.createElement('span');
 characterCopy.innerHTML = 'GreenON 친구가<br />오늘의 쿨링을 함께해요';
